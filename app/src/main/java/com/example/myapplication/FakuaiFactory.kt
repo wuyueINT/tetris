@@ -1,19 +1,12 @@
 package com.example.myapplication
 
-class FakuaiFactory(number: Int){
-
-    private var number = 0
-    private var pos = 0
-
-    init {
-        this.number = number
-    }
+class FakuaiFactory(){
 
     /**
      * 返回
      */
-    fun getProduct(): FakuaiProduct{
-        pos = (10*Math.random()).toInt()
+    fun getProduct(number: Int): FakuaiProduct{
+        var pos = (10*Math.random()).toInt()
         when(number){
             1 -> return Fakuai01(10, pos)
             2 -> return Fakuai02(10, pos)

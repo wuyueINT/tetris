@@ -1,6 +1,4 @@
-package com.example.mya
-
-import com.example.myapplication.R
+package com.example.myapplication
 
 import android.content.Context
 import android.graphics.Color
@@ -10,29 +8,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class BoardAdapter(context: Context, data: Array<IntArray>) : RecyclerView.Adapter<BoardAdapter.VH>() {
-
-    private var context: Context? = null
-    private var data: Array<IntArray>? = null
-
-    init {
-        this.context = context
-        this.data = data
-    }
+class BoardAdapter(private var context: Context, private var data: Array<Array<Int>>) : RecyclerView.Adapter<BoardAdapter.VH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-        var view = LayoutInflater.from(context).inflate(R.layout.board_room, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.board_room, parent, false)
         return VH(view)
     }
 
     override fun getItemCount(): Int {
-        return 200
+        return 300
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         val i = position/10
         val j = position%10
-        if (data?.get(i)?.get(j) ==0){
+        if (data[i][j] ==0){
             holder.board_room.setBackgroundColor(Color.WHITE)
         } else {
             holder.board_room.setBackgroundColor(Color.BLUE)
