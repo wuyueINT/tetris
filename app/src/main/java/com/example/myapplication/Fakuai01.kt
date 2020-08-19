@@ -17,8 +17,7 @@ class Fakuai01(maxRight: Int, startPos: Int) : FakuaiProduct(maxRight, startPos)
         arrayOf(0,0,0,0),
         arrayOf(0,0,0,0)
     )
-    private var state = 0
-    private var shape: Array<Array<Int>>? = null
+    var state = 0
 
     init {
         this.shape = shape1

@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class BoardAdapter(private var context: Context, private var data: Array<Array<Int>>) : RecyclerView.Adapter<BoardAdapter.VH>() {
+class BoardAdapter2(private var context: Context, private var data: Array<Array<Int>>) : RecyclerView.Adapter<BoardAdapter2.VH>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
         val view = LayoutInflater.from(context).inflate(R.layout.board_room, parent, false)
@@ -16,12 +16,12 @@ class BoardAdapter(private var context: Context, private var data: Array<Array<I
     }
 
     override fun getItemCount(): Int {
-        return 300
+        return 16
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        val i = position/10
-        val j = position%10
+        val i = position/4
+        val j = position%4
         if (data[i][j] == 0){
             holder.board_room.setBackgroundColor(Color.WHITE)
         } else {

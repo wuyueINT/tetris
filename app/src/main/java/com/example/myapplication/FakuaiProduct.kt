@@ -2,29 +2,29 @@ package com.example.myapplication
 
 abstract class FakuaiProduct(maxRight: Int, startPos: Int){
 
-    private var speed: Int = 0
     private var state: Int = 0
-    private var position = arrayOf(0, startPos) //这个代表的是方块最下面一个格子的位置
-    private var maxRight: Int = maxRight
+    var position = arrayOf(0, startPos) //这个代表的是方块左下角格子的位置
+    var maxRight: Int = maxRight
+    var shape: Array<Array<Int>>? = null
 
     fun leftMove(){
-        if (this.position[0]!=0){
-            this.position[0]--
+        if (position[1]>-4){
+            position[1]--
         }
     }
 
     fun rightMove(){
-        if (this.position[0]!=maxRight){
-            this.position[0]++
+        if (position[1]<maxRight){
+            position[1]++
         }
     }
 
     fun downMove(){
-        this.position[1]++
+        position[1]++
     }
 
     fun dropMove(){
-        this.speed = 5
+        position[1] += 5
     }
 
     abstract fun reshape()
