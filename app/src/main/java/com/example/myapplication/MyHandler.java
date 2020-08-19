@@ -9,18 +9,21 @@ import androidx.annotation.NonNull;
 import java.lang.ref.WeakReference;
 
 public class MyHandler extends Handler {
-    private Activity activity;
+    private HandlerCallback callback;
 
-    public MyHandler(Activity activity){
-        this.activity = new WeakReference<>(activity).get();
+    public MyHandler(HandlerCallback callback){
+        this.callback = new WeakReference<>(callback).get();
     }
 
     @Override
     public void handleMessage(@NonNull Message msg) {
-        if (activity==null){
+        if (callback==null){
             return;
         }
-        super.handleMessage(msg);
+        callback.handleMessage(msg);
     }
 
+    public interface HandlerCallback{
+        void handleMessage(Message msg);
+    }
 }

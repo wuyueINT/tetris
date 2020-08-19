@@ -125,15 +125,14 @@ public final class MainActivity extends AppCompatActivity {
         rvNextFakuai = findViewById(id.rv_next);
     }
 
-    @SuppressLint("HandlerLeak") //这里存疑，记得问一问
     private void initData() {
-        handler = new MyHandler(this){
+        //避免内存泄露的handler写法
+        handler = new MyHandler(new MyHandler.HandlerCallback() {
             @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
-                handMes(msg);
+            public void handleMessage(Message msg) {
+                handleMessage(msg);
             }
-        };
+        });
         data = new Integer[30][10];
         for (int i=0; i<30; i++){
             for (int j=0; j<10; j++){
