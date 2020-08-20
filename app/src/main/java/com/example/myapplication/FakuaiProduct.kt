@@ -20,11 +20,11 @@ abstract class FakuaiProduct(maxRight: Int, startPos: Int){
     }
 
     fun downMove(){
-        position[1]++
+        position[0]++
     }
 
     fun dropMove(){
-        position[1] += 5
+        position[0] += 5
     }
 
     abstract fun reshape()

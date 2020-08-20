@@ -59,11 +59,15 @@ public final class MainActivity extends AppCompatActivity {
         leftBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                fakuai.leftMove();
-                if (putFakuai2List()){
-                    adapter.notifyDataSetChanged();
-                } else {
-                    fakuai.rightMove();
+                if (fakuai!=null){
+                    put02Position();
+                    fakuai.leftMove();
+                    if (putFakuai2List()){
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        put12Position();
+                        fakuai.rightMove();
+                    }
                 }
             }
         });
@@ -71,11 +75,15 @@ public final class MainActivity extends AppCompatActivity {
         rightBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                fakuai.rightMove();
-                if (putFakuai2List()){
-                    adapter.notifyDataSetChanged();
-                } else {
-                    fakuai.leftMove();
+                if (fakuai!=null){
+                    put02Position();
+                    fakuai.rightMove();
+                    if (putFakuai2List()){
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        fakuai.leftMove();
+                        put12Position();
+                    }
                 }
             }
         });
@@ -83,11 +91,14 @@ public final class MainActivity extends AppCompatActivity {
         dropBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                fakuai.dropMove();
-                if (putFakuai2List()){
-                    adapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(MainActivity.this, "哇，慢一点", Toast.LENGTH_SHORT).show();
+                if (fakuai!=null){
+                    put02Position();
+                    fakuai.dropMove();
+                    if (putFakuai2List()){
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(MainActivity.this, "哇，慢一点", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -95,11 +106,14 @@ public final class MainActivity extends AppCompatActivity {
         reshapeBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                fakuai.reshape();
-                if (putFakuai2List()){
-                    adapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(MainActivity.this, "出错了", Toast.LENGTH_SHORT).show();
+                if (fakuai!=null){
+                    put02Position();
+                    fakuai.reshape();
+                    if (putFakuai2List()){
+                        adapter.notifyDataSetChanged();
+                    } else {
+                        Toast.makeText(MainActivity.this, "出错了", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });
@@ -130,9 +144,11 @@ public final class MainActivity extends AppCompatActivity {
         handler = new MyHandler(new MyHandler.HandlerCallback() {
             @Override
             public void handleMessage(Message msg) {
-                handleMessage(msg);
+                handMes(msg);
             }
         });
+
+        //初始化游戏页面的显示
         data = new Integer[30][10];
         for (int i=0; i<30; i++){
             for (int j=0; j<10; j++){
@@ -140,9 +156,10 @@ public final class MainActivity extends AppCompatActivity {
             }
         }
         adapter = new BoardAdapter(this, data);
-        rvGameArea.setLayoutManager(new GridLayoutManager(this, 30));
+        rvGameArea.setLayoutManager(new GridLayoutManager(this, 10));
         rvGameArea.setAdapter(adapter);
 
+        //初始化下一个方块的页面显示
         data2 = new Integer[4][4];
         for (int i=0; i<4; i++){
             for (int j=0; j<4; j++){
@@ -158,6 +175,7 @@ public final class MainActivity extends AppCompatActivity {
         switch (msg.what){
             case MSG_START_GAME:
                 initFakuai();
+                put02Position();
                 fakuai.downMove();
                 if (putFakuai2List()){
                     adapter.notifyDataSetChanged();
@@ -172,33 +190,43 @@ public final class MainActivity extends AppCompatActivity {
 
     //将方块的位置状态更新到游戏页面中
     private boolean putFakuai2List() {
-        Integer[] a = fakuai.getPosition();
-        Integer[][] b = fakuai.getShape();
+        Integer[] a = fakuai.getPosition(); //二维数组，记录方块左下角的位置
+        Integer[][] b = fakuai.getShape(); //二维数组，描述方块的形状
+
         if (b!=null){
+            //将下一个方块的形状更新到显示页面
+            for (int i=0; i<4; i++){
+                System.arraycopy(b[i], 0, data2[i], 0, 4);
+            }
+            adapter2.notifyDataSetChanged();
+            //接下来处理游戏页面
+            //如果检测到有碰撞，则不移动方块
             for (int i=0; i<4; i++){
                 for (int j=0; j<4; j++){
                     int x = a[0]-3+i;
                     int y = a[1]+j;
                     if (x<0 || y<0 || x>=30 || y>=10){
                         break;
-                    }else if (data[x][y]==1 && b[i][j]==1){
+                    }else if (x>=29){ //接触底部
+                        return true;
+                    } else if (data[x][y]==1 && b[i][j]==1){ //与其他方块碰撞
                         return false;
                     }
                 }
             }
+            //如果检测到没有碰撞，移动方块
             for (int i=0; i<4; i++){
                 for (int j=0; j<4; j++){
                     int x = a[0]-3+i;
                     int y = a[1]+j;
                     if (x<0 || y<0 || x>=30 || y>=10){
                         break;
-                    }else {
+                    }else if (b[i][j]==1){
                         data[x][y] = b[i][j];
                     }
                 }
             }
         }
-
         Integer[][] c = nextFakuai.getShape();
         if (c!=null){
             for (int i=0; i<4; i++){
@@ -206,6 +234,44 @@ public final class MainActivity extends AppCompatActivity {
             }
         }
         return true;
+    }
+
+    //将方块的位置置零
+    private void put02Position() {
+        Integer[] a = fakuai.getPosition(); //二维数组，记录方块左下角的位置
+        Integer[][] b = fakuai.getShape(); //二维数组，描述方块的形状
+        if (b!=null){
+            for (int i=0; i<4; i++){
+                for (int j=0; j<4; j++){
+                    int x = a[0]-3+i;
+                    int y = a[1]+j;
+                    if (x>=0 && x<30 && y>=0 && y<10){
+                        if (b[i][j]==1){
+                            data[x][y] = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //将方块的位置置一
+    private void put12Position() {
+        Integer[] a = fakuai.getPosition(); //二维数组，记录方块左下角的位置
+        Integer[][] b = fakuai.getShape(); //二维数组，描述方块的形状
+        if (b!=null){
+            for (int i=0; i<4; i++){
+                for (int j=0; j<4; j++){
+                    int x = a[0]-3+i;
+                    int y = a[1]+j;
+                    if (x>=0 && x<30 && y>=0 && y<10){
+                        if (b[i][j]==1){
+                            data[x][y] = 1;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void initFakuai() {
